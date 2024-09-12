@@ -1,102 +1,137 @@
--- Create database and use it
-CREATE DATABASE Netflix;
+--CREATE DATABASE
+CREATE DATABASE netflix;
 USE netflix;
+**************************************
 
--- Create original tables
-
--- State table
-CREATE TABLE states(
-idx INT IDENTITY(1,1) NOT NULL,
-state_code VARCHAR(10) NOT NULL UNIQUE,
-states VARCHAR(100) NOT NULL UNIQUE,
-region VARCHAR(20) NOT NULL,
-PRIMARY KEY(idx));
-
--- Language table
-CREATE TABLE languages(
-idx INT IDENTITY(1,1),
-languages VARCHAR(20) NOT NULL UNIQUE,
-PRIMARY KEY(idx));
-
--- Rating table
-CREATE TABLE ratings(
-idx INT IDENTITY(1,1) NOT NULL,
-rating VARCHAR(10) NOT NULL UNIQUE,
-PRIMARY KEY(idx));
-
--- Categories table
+--Create original tables
 CREATE TABLE categories(
-idx INT IDENTITY(1,1) NOT NULL,
-categories VARCHAR(50) NOT NULL UNIQUE,
-PRIMARY KEY(idx));
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+categories VARCHAR(30) NOT NULL UNIQUE);
 
--- Mode table
-CREATE TABLE modes(
-idx INT IDENTITY(1,1) NOT NULL
-modes VARCHAR(50) NOT NULL UNIQUE,
-PRIMARY KEY(idx));
+CREATE TABLE device(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+device VARCHAR(10) NOT NULL UNIQUE);
 
--- Programs table
+CREATE TABLE languages(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+langauges VARCHAR(10) NOT NULL UNIQUE);
+
+CREATE TABLE payments(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+payment VARCHAR(15) NOT NULL UNIQUE);
+
+CREATE TABLE plans(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+subs VARCHAR(5) NOT NULL,
+price DECIMAL(5,2) NOT NULL UNIQUE);
+
+CREATE TABLE production(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+produc VARCHAR(10) NOT NULL,
+mode VARCHAR(10) NOT NULL);
+
 CREATE TABLE programs(
-idx INT IDENTITY(1,1) NOT NULL,
-ddate INT NOT NULL,
-idiom INT NOT NULL,
-category INT NOT NULL,
-rate INT NOT NULL,
-class VARCHAR(10) NOT NULL,
-production VARCHAR(20) NOT NULL,
-duration INT NOT NULL,
-PRIMARY KEY(idx),
-FOREIGN KEY(idiom)
-REFERENCES languages(idx),
-FOREIGN KEY(category)
-REFERENCES categories(idx),
-FOREIGN KEY(rate)
-REFERENCES ratings(idx),
-FOREIGN KEY(duration)
-REFERENCES modes(idx));
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+ddate_id BIGINT NOT NULL,
+lang_id BIGINT NOT NULL,
+catg_id BIGINT NOT NULL,
+produc_id BIGINT NOT NULL,
+FOREIGN KEY (ddate_id) REFERENCES calendar(idx),
+FOREIGN KEY (lang_id) REFERENCES languages(idx),
+FOREIGN KEY (catg_id) REFERENCES categories(idx),
+FOREIGN KEY (produc_id) REFERENCES production(idx));
 
--- Users table
+CREATE TABLE ratings(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+ratings VARCHAR(15) NOT NULL UNIQUE);
+
+CREATE TABLE states(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+state_code VARCHAR(5) NOT NULL,
+states VARCHAR(20) NOT NULL,
+region VARCHAR(10) NOT NULL);
+
 CREATE TABLE users(
-idx INT IDENTITY(1,1) NOT NULL UNIQUE,
-state_id VARCHAR(10) NOT NULL,
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+state_id BIGINT NOT NULL,
 created_on BIGINT NOT NULL,
-membership VARCHAR(10) NOT NULL,
-acct_status VARCHAR(20) NOT NULL,
-subscription VARCHAR(10) NOT NULL,
-plan_acct DECIMAL(5,2) NOT NULL,
-device VARCHAR(10) NOT NULL,
-payment VARCHAR(20) NOT NULL,
-PRIMARY KEY(idx),
-FOREIGN KEY(created_on)
-REFERENCES calendar(idx),
-FOREIGN KEY(state_id)
-REFERENCES states(state_code));
+sub_id BIGINT NOT NULL,
+dev_id BIGINT NOT NULL,
+pay_id BIGINT NOT NULL,
+FOREIGN KEY (state_id) REFERENCES states(idx),
+FOREIGN KEY (created_on) REFERENCES calendar(idx),
+FOREIGN KEY (sub_id) REFERENCES plans(idx),
+FOREIGN KEY (dev_id) REFERENCES device(idx),
+FOREIGN KEY (pay_id) REFERENCES payments(idx));
 
+CREATE TABLE viewx(
+idx BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+users_id BIGINT NOT NULL,
+view_on BIGINT NOT NULL,
+prg_id BIGINT NOT NULL,
+rate_id BIGINT NOT NULL,
+dev_id BIGINT NOT NULL,
+FOREIGN KEY (users_id) REFERENCES users(idx),
+FOREIGN KEY (view_on) REFERENCES calendar(idx),
+FOREIGN KEY (prg_id) REFERENCES programs(idx),
+FOREIGN KEY (rate_id) REFERENCES ratings(idx),
+FOREIGN KEY (dev_id) REFERENCES device(idx));
+
+******************************************
 -- Procedure to copy from fake table to original tables
-CREATE PROCEDURE --procedure name
-AS
-INSERT INTO --real table (column1, column2...)
-SELECT --(same amount of column as real table)
-FROM --faketable
+CREATE PROCEDURE realuser AS
+INSERT INTO users (state_id,created_on,acct_status,
+plan_id,device_id,pay_id)
+SELECT 
+state_id,created_on,acct_status,plan_id,
+device_id,pay_id
+FROM fakeusers
 GO;
 
+CREATE PROCEDURE realprograms AS
+INSERT INTO programs(ddate_id,idiom_id,category_id,
+class_id,produc_id,run_id)
+SELECT 
+ddate_id,idiom_id,category_id,class_id,produc_id,runs
+FROM fakeprograms
+GO;
+
+CREATE PROCEDURE realviews AS
+INSERT INTO tviews(played_on,users_id,program_id,rate_id)
+SELECT 
+played_on,users_id,program_id,rate_id
+FROM fakeviews
+GO;
+
+CREATE PROCEDURE inc_user_prg AS
+DELETE v
+FROM viewx AS v
+INNER JOIN users AS u
+ON v.users_id=u.idx
+INNER JOIN programs AS p
+ON v.prg_id=p.idx
+WHERE
+v.users_id=u.idx AND v.view_on<u.created_on OR
+v.prg_id=p.idx AND v.view_on<p.ddate_id
+GO;
+
+*********************************
 -- Indexs
-CREATE INDEX states_name
-ON states(states);
+CREATE INDEX usersx
+ON users(state_id,created_on,
+sub_id,dev_id,pay_id);
 
-CREATE INDEX languages_type
-ON languages(languages);
+CREATE INDEX viewsx
+ON viewx(users_id,view_on,prg_id,rate_id,dev_id);
 
-CREATE INDEX rates
-ON ratings(rating);
+CREATE INDEX programx
+ON programs(ddate_id,lang_id,catg_id,produc_id);
 
-CREATE INDEX ddates
-ON programs(ddate);
+CREATE INDEX datex
+ON calendar (ddate,years,months,months_name,day_num,
+day_name,y_weeks,y_quarter);
 
-CREATE INDEX finduser
-ON users(users)
-
+*************************
 -- Bulk inserts
 BULK INSERT --table
 FROM ---file path
@@ -105,47 +140,26 @@ WITH (
 	FIELDTERMINATOR=','
 	);
 
--- Create fake tables
-
--- Fake state
-CREATE TABLE fakestate(
-state_code VARCHAR(100),
-states VARCHAR(100),
-regions VARCHAR(100));
-
--- Fake rating
-CREATE TABLE fakeratings(
-ratings VARCHAR(100));
-
--- Fake modes
-CREATE TABLE fakemode(
-modes VARCHAR(100));
-
--- Fake language
-CREATE TABLE fakelanguage(
-languages VARCHAR(100));
-
--- Fake program
+*******************************
+--Create fake tables to help with bulk insert
 CREATE TABLE fakeprograms(
-ddate VARCHAR(100),
-languages VARCHAR(100),
-category VARCHAR(100),
-rating VARCHAR(100),
-class VARCHAR(100),
-production VARCHAR(100),
-duration VARCHAR(100));
+ddate_id VARCHAR(50),
+idiom_id VARCHAR(50),
+category_id VARCHAR(50),
+class_id VARCHAR(50),
+produc_id VARCHAR(50),
+runs VARCHAR(50));
 
--- Fake category
-CREATE TABLE fakecategories(
-categories VARCHAR(100));
+CREATE TABLE fakeusers(
+state_id VARCHAR(50),
+created_on VARCHAR(50),
+acct_status VARCHAR(50),
+plan_id VARCHAR(50),
+device_id VARCHAR(50),
+pay_id VARCHAR(50));
 
--- Fake user
-CREATE TABLE fakeuser(
-state_id VARCHAR(100),
-created_on VARCHAR(100),
-membership VARCHAR(100),
-acct_status VARCHAR(100),
-subscription VARCHAR(100),
-payment_amount VARCHAR(100),
-device VARCHAR(100),
-payment_method VARCHAR(100));
+CREATE TABLE fakeviews(
+played_on VARCHAR(50),
+users_id VARCHAR(50),
+program_id VARCHAR(50),
+rate_id VARCHAR(50));
