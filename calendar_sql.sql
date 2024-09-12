@@ -1,5 +1,5 @@
 -- Create a recursive CTE to generate dates
--- Set the date range for dates to be added
+-- Set the date range for  dates to be added
 DECLARE @Startdate DATE = 'year-month-day';
 DECLARE @Enddate DATE = 'year-month-day';
 
@@ -28,6 +28,8 @@ INTO calendar
 FROM 
     DateRange
 OPTION (MAXRECURSION 0);
+
+
 
 -- Set the date range for new dates to be added
 DECLARE @Startdate DATE = 'year-month-day';
@@ -66,7 +68,10 @@ UPDATE calendar
 SET idx = ROW_NUMBER() OVER (ORDER BY ddate);
 
 -- Optional: Rebuild primary key constraint (if necessary)
+
 ALTER TABLE calendar
 DROP CONSTRAINT PK_calendar;
+
 ALTER TABLE calendar
 ADD CONSTRAINT PK_calendar PRIMARY KEY (idx);
+
