@@ -1,4 +1,4 @@
-![Logo]()
+![Logo](https://github.com/radha2106/Viz2-Netlfix/blob/main/photos/logo.png)
 
 # Netflix Dashboard Project
 This project is about a dataset/database about how Netflix behaves and produce their insights on revenues, views of programs, amount of users and their subscription types
