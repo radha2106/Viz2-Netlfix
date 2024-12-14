@@ -4,12 +4,12 @@
 This project is about a dataset/database about how Netflix behaves and produce their insights on revenues, views of programs, amount of users and their subscription types
 
 ## Steps
-First search/find a dataset which use fake netflix information
-Create a helper file where you can add how many series/movies could be programmed in a year
-Find the census of the US and make a mock-up dataset of people who could potentially use netflix
-Since excel has limitiations in rows find a way to create it in pytthon since data will need to be random for a faster procedure
-When files are create in excel, create tables in SQL
-For the 3 most important tables (users, views, programs) you will need to create fake tables to help you better when insert it to the real tables (copy/move)
+- First search/find a dataset which use fake netflix information.
+- Create a helper file where you can add how many series/movies could be programmed in a year.
+- Find the census of the US and make a mock-up dataset of people who could potentially use netflix.
+- Since excel has limitiations in rows find a way to create it in pytthon since data will need to be random for a faster procedure.
+- When files are create in excel, create tables in SQL.
+- For the 3 most important tables (users, views, programs) you will need to create fake tables to help you better when insert it to the real tables (copy/move)
 
 ## Documentation
 **Full steps are here**: [Steps](https://github.com/radha2106/Viz2/blob/main/Steps.md)<br/>
