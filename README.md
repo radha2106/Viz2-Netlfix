@@ -16,7 +16,7 @@ This project is about a dataset/database about how Netflix behaves and produce t
 **Calendar table**: [Calendar](https://github.com/radha2106/Viz2/blob/main/calendar_sql.sql)<br/>
 **SQL Tables Snaps**: [Here](https://github.com/radha2106/Viz2/tree/main/photos)<br/>
 **Full SQL Code**: [Here](https://github.com/radha2106/Viz2/blob/main/Tables_SQL.sql)<br/>
-**Dashboard here**: [Viz2](https://project.novypro.com/UIKrHN)<br/>
+**Dashboard here**: [Viz2](https://app.powerbi.com/view?r=eyJrIjoiOTRlM2FjZjctZmIwYi00YzM3LWEyYTQtYTZlOWE3NWY0ZDFlIiwidCI6IjQ4MjkzMjgyLTgzMmQtNGQwYi05ZTBmLTVmMmFmYTg5YTFlNCIsImMiOjJ9)<br/>
 **DAX Modeling**: [PBI Model](https://github.com/radha2106/Viz2/blob/main/DAX%20Modeling.png)<br/>
 **DAX Codes**: [PBI Meassures](https://github.com/radha2106/Viz2/blob/main/Dax%20Meassures)<br/>
 
